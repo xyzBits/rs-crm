@@ -9,7 +9,7 @@ fn main() -> Result<()> {
     let builder = tonic_build::configure();
 
     builder
-        .out_dir("src/pb")// 输出的路径，此处指定为项目 src/pb
+        .out_dir("src/pb") // 输出的路径，此处指定为项目 src/pb
         // 指定要编译的 proto 文件路径列表，第二个参数是提供protobuf的扩展路径
         // 因为 protobuf 官方提供了一些扩展功能，自己也可能会写一些扩展功能，
         // 如存在，则指定扩展文件路径，如果没有，则指定为proto文件所在目录即可
