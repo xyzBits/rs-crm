@@ -7,11 +7,7 @@ fn main() -> Result<()> {
 
     builder
         .out_dir("src/pb")
-        .compile(
-            &["../protos/crm.proto"],
-            &["../protos"],
-        )?;
-
+        .compile(&["../protos/crm.proto"], &["../protos"])?;
 
     Ok(())
 }

@@ -1,9 +1,7 @@
-pub mod pb {
-    include!(concat!(env!("OUT_DIR"), "/crm.rs"));
-}
+use crm::pb::User;
 
 fn main() {
-    let user = pb::User::default();
+    let user = User::new(1, "bitch", "bitch@gmail.com");
+
     println!("{:?}", user);
-    println!("Hello, world!");
 }
