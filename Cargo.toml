@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "crm",
+    "user-stat",
 ]
 
 resolver = "2"
