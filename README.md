@@ -30,5 +30,10 @@ $ cargo install sqlx-cli --no-default-features --features rustls
 
 ```shell
 sqlx migrate add init 
-
+dropdb stats 
+createdb stats 
+sqlx migrate run 
 ```
+
+docker 安装运行 [postgres](https://www.commandprompt.com/education/how-to-create-a-postgresql-database-in-docker/)
+
