@@ -100,7 +100,7 @@ async fn raw_insert(users: HashSet<UserStat>, pool: &PgPool) -> Result<()> {
         ));
     }
 
-    let v = &sql[..sql.len() - 1];
+    let v = &sql[..sql.len() - 1]; // 去掉最后面的一个 ,
     sqlx::query(v).execute(pool).await?;
 
     Ok(())
@@ -181,5 +181,21 @@ impl Dummy<UniqueEmail> for String {
         let id = nanoid!(8, &ALPHABET);
         let at = email.find('@').unwrap();
         format!("{}.{}{}", &email[..at], id, &email[at..])
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::UserStat;
+    use anyhow::Result;
+    use sqlx::PgPool;
+
+    #[tokio::test]
+    async fn test_connect() -> Result<()> {
+        let db_url = "postgres://postgres:pass123@localhost:5432/stats";
+        // let pool = PgPool::connect(&std::env::var("DATABASE_URL")?).await?;
+        let pool = PgPool::connect(db_url).await?;
+
+        Ok(())
     }
 }
