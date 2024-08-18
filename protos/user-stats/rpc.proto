@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package user_stats;
+
+//需要 protocol buffers 插件
+// 这个路径需要正确
+import "user-stats/messages.proto";//会因为 compile include 的配置不同而变化
+//import "messages.proto";
+
+service UserStats {
+    //通过使用流(streaming)，你可以向服务器或者客户端发送批量的数据，
+    // 服务器和客户端在接收这些数据的时候，可以不必等所有的消息全收到后才开始响应，
+    // 而是接收到第一条消息的时候就可以及时的响应， 这显然比以前的类HTTP 1.1的方式更快的提供响应，从而提高性能。
+    rpc Query(QueryRequest) returns (stream User) {}
+    rpc RawQuery(RawQueryRequest) returns (stream User) {}
+}

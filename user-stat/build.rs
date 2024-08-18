@@ -13,7 +13,12 @@ fn main() -> Result<()> {
         // 指定要编译的 proto 文件路径列表，第二个参数是提供protobuf的扩展路径
         // 因为 protobuf 官方提供了一些扩展功能，自己也可能会写一些扩展功能，
         // 如存在，则指定扩展文件路径，如果没有，则指定为proto文件所在目录即可
-        .compile(&["../protos/crm/crm.proto"], &["../protos"])?;
+        .compile(&[
+            "../protos/user-stats/messages.proto",
+            "../protos/user-stats/rpc.proto"
+        ],
+                 &["../protos"])?;// import "user-stats/messages.proto";
+                 // &["../protos/user-stats"])?;// import "messages.proto";
 
     Ok(())
 }
