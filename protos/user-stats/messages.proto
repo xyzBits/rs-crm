@@ -15,6 +15,7 @@ message QueryRequest {
 }
 
 message RawQueryRequest {
+    // 这个其实代表了 sql
     string query = 1;
 }
 

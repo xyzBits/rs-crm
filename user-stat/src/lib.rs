@@ -30,6 +30,7 @@ pub struct UserStatsServiceInner {
     pool: PgPool,
 }
 
+// impl protobuf 中定义的 grpc 接口
 #[async_trait] // 不加这个编译不过
 impl UserStats for UserStatsService {
     type QueryStream = ResponseStream;
@@ -37,7 +38,8 @@ impl UserStats for UserStatsService {
         &self,
         request: Request<QueryRequest>,
     ) -> Result<Response<Self::QueryStream>, Status> {
-        todo!()
+        let query_request = request.into_inner();
+        self.query(query_request).await
     }
 
     type RawQueryStream = ResponseStream;
@@ -46,17 +48,26 @@ impl UserStats for UserStatsService {
         &self,
         request: Request<RawQueryRequest>,
     ) -> Result<Response<Self::RawQueryStream>, Status> {
-        todo!()
+        let raw_query_request = request.into_inner();
+        self.raw_query(raw_query_request).await
     }
 }
 
 impl UserStatsService {
     pub async fn new(config: AppConfig) -> Self {
-        todo!()
+        let pool = PgPool::connect(&config.server.db_url)
+            .await
+            .expect("Failed to connect to db");
+
+        let inner = UserStatsServiceInner { config, pool };
+
+        Self {
+            inner: Arc::new(inner),
+        }
     }
 
     pub fn into_server(self) -> UserStatsServer<Self> {
-        todo!()
+        UserStatsServer::new(self)
     }
 }
 
@@ -64,6 +75,6 @@ impl Deref for UserStatsService {
     type Target = UserStatsServiceInner;
 
     fn deref(&self) -> &Self::Target {
-        todo!()
+        &self.inner
     }
 }
