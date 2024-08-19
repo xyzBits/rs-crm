@@ -9,6 +9,7 @@ use tonic::{async_trait, Request, Response, Status};
 pub struct UserServer;
 
 // 这个 UserService 是定义在 protobuf 中的 UserService
+// 经过rust 编译后，生成了一个 trait
 // 以前 async 不能在trait 中使用，所以需要加这个注解，才可以在实现中添加 async 函数
 #[async_trait]
 impl UserService for UserServer {

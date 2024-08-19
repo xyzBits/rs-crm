@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+# 版本控制，确保所有的 crate 使用相同的版本，
+# 简化依赖管理，避免重复的引入
 anyhow = { workspace = true }
 chrono = { workspace = true }
 derive_builder = "0.20.0"
@@ -20,11 +22,13 @@ tonic = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 
+#构建时使用，不会进入二进制包，在构建脚本中使用
 [build-dependencies]
 anyhow = {workspace = true}
 tonic-build = {workspace = true}
 proto-builder-trait = "0.6.1"
 
+# 在开发和测试过程中使用，不会进入最终的 binary 包中
 [dev-dependencies]
 fake = { version = "2.9.2", features = ["derive", "chrono"] }
 nanoid = "0.4.0"

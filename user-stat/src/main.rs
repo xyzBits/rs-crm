@@ -19,6 +19,7 @@ async fn main() -> Result<()> {
 
     info!("UserService listening on {}", addr);
     let svc = UserStatsService::new(config).await.into_server();
+
     Server::builder().add_service(svc).serve(addr).await?;
 
     Ok(())

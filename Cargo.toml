@@ -6,6 +6,7 @@ members = [
     "user-stat",
 ]
 
+# 第二个版本的依赖解析控制器
 resolver = "2"
 
 

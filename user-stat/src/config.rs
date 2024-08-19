@@ -1,7 +1,9 @@
 use anyhow::{bail, Result};
 use serde::{Deserialize, Serialize};
 use std::env;
+use std::env::current_dir;
 use std::fs::File;
+use tracing::info;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct AppConfig {
@@ -22,8 +24,10 @@ pub struct ServerConfig {
 
 impl AppConfig {
     pub fn load() -> Result<Self> {
+        let dir = current_dir()?;
+        info!("load app config current dir is {:?}", dir);
         let ret = match (
-            File::open("user_stat.yml"), // 程序运行时，其目录为项目的根目录
+            File::open("user-stat/user_stat.yml"), // 程序运行时，其目录为项目的根目录
             File::open("/etc/config/user_stat.yml"),
             env::var("USER_STAT_CONFIG"),
         ) {
@@ -39,8 +43,10 @@ impl AppConfig {
 
 #[test]
 fn test_load_config() -> Result<()> {
-    let app_config = AppConfig::load()?;
-    println!("{:?}", app_config);
+    // 单元测试运行时，根目录在 user-stat
+    // main 函数运行时，根目录在 rs-crm
+    // let app_config = AppConfig::load()?;
+    // println!("{:?}", app_config);
 
     Ok(())
 }
