@@ -28,6 +28,7 @@ $ cargo install sqlx-cli --features openssl-vendored
 $ cargo install sqlx-cli --no-default-features --features rustls
 ```
 
+先插入数据，再加上index，如果先加index，插入数据时会比较慢
 ```shell
 sqlx migrate add init 
 dropdb stats 
