@@ -158,6 +158,7 @@ pub mod user_stats_client {
                 .insert(GrpcMethod::new("user_stats.UserStats", "Query"));
             self.inner.server_streaming(req, path, codec).await
         }
+        /// 直接使用 sql 进行查询
         pub async fn raw_query(
             &mut self,
             request: impl tonic::IntoRequest<super::RawQueryRequest>,
@@ -202,6 +203,7 @@ pub mod user_stats_server {
                 Item = std::result::Result<super::User, tonic::Status>,
             > + Send
             + 'static;
+        /// 直接使用 sql 进行查询
         async fn raw_query(
             &self,
             request: tonic::Request<super::RawQueryRequest>,
