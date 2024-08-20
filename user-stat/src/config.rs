@@ -27,13 +27,15 @@ impl AppConfig {
         let dir = current_dir()?;
         info!("load app config current dir is {:?}", dir);
         let ret = match (
-            File::open("user-stat/user_stat.yml"), // 程序运行时，其目录为项目的根目录
+            File::open("user-stat/user_stat.yml"), // main 函数运行时，根目录在 rs-crm
+            File::open("user_stat.yml"), // 单元测试运行时，根目录在 user-stat，直接在 idea 中运行，不是命令行中运行
             File::open("/etc/config/user_stat.yml"),
             env::var("USER_STAT_CONFIG"),
         ) {
-            (Ok(reader), _, _) => serde_yaml::from_reader(reader),
-            (_, Ok(reader), _) => serde_yaml::from_reader(reader),
-            (_, _, Ok(path)) => serde_yaml::from_reader(File::open(path)?),
+            (Ok(reader), _, _, _) => serde_yaml::from_reader(reader),
+            (_, Ok(reader), _, _) => serde_yaml::from_reader(reader),
+            (_, _, Ok(reader), _) => serde_yaml::from_reader(reader),
+            (_, _, _, Ok(path)) => serde_yaml::from_reader(File::open(path)?),
             _ => bail!("Config file not found"),
         };
 
@@ -45,8 +47,8 @@ impl AppConfig {
 fn test_load_config() -> Result<()> {
     // 单元测试运行时，根目录在 user-stat
     // main 函数运行时，根目录在 rs-crm
-    // let app_config = AppConfig::load()?;
-    // println!("{:?}", app_config);
+    let app_config = AppConfig::load()?; // 在 idea 中运行测试，而不是在命令行
+    println!("{:?}", app_config);
 
     Ok(())
 }

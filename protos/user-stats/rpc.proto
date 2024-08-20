@@ -12,5 +12,7 @@ service UserStats {
     // 服务器和客户端在接收这些数据的时候，可以不必等所有的消息全收到后才开始响应，
     // 而是接收到第一条消息的时候就可以及时的响应， 这显然比以前的类HTTP 1.1的方式更快的提供响应，从而提高性能。
     rpc Query(QueryRequest) returns (stream User) {}
+
+    // 直接使用 sql 进行查询
     rpc RawQuery(RawQueryRequest) returns (stream User) {}
 }

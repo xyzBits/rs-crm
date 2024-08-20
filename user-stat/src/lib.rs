@@ -54,6 +54,8 @@ impl UserStats for UserStatsService {
 }
 
 impl UserStatsService {
+    /// 将 服务器的配置加载进来
+    /// 并且将 数据库连接池放在 Arc 中
     pub async fn new(config: AppConfig) -> Self {
         let pool = PgPool::connect(&config.server.db_url)
             .await

@@ -30,6 +30,7 @@ pub struct QueryRequest {
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct RawQueryRequest {
+    /// 这个其实代表了 sql
     #[prost(string, tag = "1")]
     #[builder(setter(into))]
     pub query: ::prost::alloc::string::String,
