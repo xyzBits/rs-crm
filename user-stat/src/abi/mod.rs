@@ -12,7 +12,9 @@ impl UserStatsService {
             .timestamps
             .into_iter()
             .map(|(k, v)| timestamp_query(&k, v.lower, v.upper))
-            .join(" AND ");
+            .join(" AND "); // 如果 time_conditions 为空，拼出来的 sql 就有问题
+
+        println!("time_conditions: {}", time_conditions);
 
         sql.push_str(&time_conditions);
 
@@ -21,7 +23,7 @@ impl UserStatsService {
             .into_iter()
             .map(|(k, v)| ids_query(&k, v.ids))
             .join(" AND ");
-        sql.push_str(" AND ");
+        // sql.push_str(" AND ");
         sql.push_str(&id_conditions);
 
         println!("Generated SQL: {}", sql);
@@ -51,6 +53,7 @@ fn ids_query(name: &str, ids: Vec<u32>) -> String {
         return "TRUE".to_string();
     }
 
+    // 这个 SQL 拼接感觉有点问题
     format!("array{:?} <@ {}", ids, name)
 }
 
@@ -87,9 +90,11 @@ mod tests {
         AppConfig, IdQuery, QueryRequestBuilder, RawQueryRequest, TimeQuery, UserStatsService,
     };
     use anyhow::Result;
-    use chrono::Utc;
+    use chrono::{Days, Utc};
     use futures::StreamExt;
+    use itertools::assert_equal;
     use prost_types::Timestamp;
+    use std::time::{SystemTime, UNIX_EPOCH};
 
     #[tokio::test]
     async fn raw_query_should_work() -> Result<()> {
@@ -118,9 +123,9 @@ mod tests {
         let svc = UserStatsService::new(app_config).await;
 
         let request = QueryRequestBuilder::default()
-            .timestamp(("created_at".to_string(), tq(Some(120), None)))
-            .timestamp(("last_visited_at".to_string(), tq(Some(30), None)))
-            .id(("viewed_but_not_started".to_string(), id(&[252790])))
+            .timestamp(("created_at".to_string(), time_query(Some(120), None)))
+            .timestamp(("last_visited_at".to_string(), time_query(Some(30), None)))
+            // .id(("viewed_but_not_started".to_string(), id_query(&[252790])))
             .build()?;
 
         let mut stream = svc.query(request).await?.into_inner();
@@ -132,18 +137,18 @@ mod tests {
         Ok(())
     }
 
-    fn id(id: &[u32]) -> IdQuery {
+    fn id_query(id: &[u32]) -> IdQuery {
         IdQuery { ids: id.to_vec() }
     }
 
-    fn tq(lower: Option<i64>, upper: Option<i64>) -> TimeQuery {
+    fn time_query(lower: Option<i64>, upper: Option<i64>) -> TimeQuery {
         TimeQuery {
-            lower: lower.map(to_ts),
-            upper: upper.map(to_ts),
+            lower: lower.map(day_to_timestamp),
+            upper: upper.map(day_to_timestamp), // 如果 upper 为 None，则直接返回 None
         }
     }
 
-    fn to_ts(days: i64) -> Timestamp {
+    fn day_to_timestamp(days: i64) -> Timestamp {
         let date = Utc::now()
             .checked_sub_signed(chrono::Duration::days(days))
             .unwrap();
@@ -152,5 +157,39 @@ mod tests {
             seconds: date.timestamp(),
             nanos: date.timestamp_subsec_nanos() as i32,
         }
+    }
+
+    #[test]
+    fn test_utc_time() -> Result<()> {
+        let date = Utc::now()
+            .checked_sub_signed(chrono::Duration::days(3))
+            .unwrap();
+        println!("{}", date);
+
+        let time = Utc::now().checked_sub_days(Days::new(3)).unwrap();
+        println!("{}", time);
+
+        let current_mills = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("Time went backwards")
+            .as_millis();
+
+        println!("{}", current_mills);
+
+        let date = Some(4).map(day_to_timestamp);
+
+        println!("{:?}", date);
+
+        let date = None.map(day_to_timestamp);
+        println!("{:?}", date);
+
+        let maybe_some_string = Some(String::from("Hello, World!"));
+        let maybe_some_len = maybe_some_string.map(|s| s.len());
+        assert_eq!(maybe_some_len, Some(13));
+
+        let x: Option<&str> = None;
+        assert_equal(x.map(|s| s.len()), None::<usize>);
+
+        Ok(())
     }
 }
