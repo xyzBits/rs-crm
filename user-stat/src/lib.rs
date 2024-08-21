@@ -17,7 +17,10 @@ pub use abi::*;
 pub use config::*;
 
 type ServiceResult<T> = Result<Response<T>, Status>;
+//todo 为什么这个类型需要使用 Pin 呢
 type ResponseStream = Pin<Box<dyn Stream<Item = Result<User, Status>> + Send>>;
+// cannot be unpinned
+// type ResponseStream = Box<dyn Stream<Item = Result<User, Status>> + Send>;
 
 #[derive(Clone)]
 pub struct UserStatsService {
