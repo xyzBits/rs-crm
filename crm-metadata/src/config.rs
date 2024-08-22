@@ -19,17 +19,16 @@ pub struct AuthConfig {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ServerConfig {
     pub port: u16,
-    pub db_url: String,
 }
 
 impl AppConfig {
     pub fn load() -> Result<Self> {
         let dir = current_dir()?;
-        info!("load user stat app config current dir is {:?}", dir);
+        info!("load metadata app config current dir is {:?}", dir);
         let ret = match (
-            File::open("user-stat/user_stat.yml"), // main 函数运行时，根目录在 rs-crm
-            File::open("user_stat.yml"), // 单元测试运行时，根目录在 user-stat，直接在 idea 中运行，不是命令行中运行
-            File::open("/etc/config/user_stat.yml"),
+            File::open("crm-metadata/metadata.yml"), // main 函数运行时，根目录在 rs-crm
+            File::open("metadata.yml"), // 单元测试运行时，根目录在 user-stat，直接在 idea 中运行，不是命令行中运行
+            File::open("/etc/config/metadata.yml"),
             env::var("USER_STAT_CONFIG"),
         ) {
             (Ok(reader), _, _, _) => serde_yaml::from_reader(reader),
@@ -44,7 +43,7 @@ impl AppConfig {
 }
 
 #[test]
-fn test_load_user_stat_config() -> Result<()> {
+fn test_load_metadata_config() -> Result<()> {
     // 单元测试运行时，根目录在 user-stat
     // main 函数运行时，根目录在 rs-crm
     let app_config = AppConfig::load()?; // 在 idea 中运行测试，而不是在命令行
