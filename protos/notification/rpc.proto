@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+// 这个 package 就是编译出来后 mod 的名称
+package notification;
+
+import "notification/messages.proto";
+
+service Notification {
+  rpc Send(stream SendRequest) returns (stream SendResponse) {}
+}
