@@ -20,6 +20,7 @@ pub struct MetadataService {
 type ServiceResult<T> = Result<Response<T>, Status>;
 type ResponseStream = Pin<Box<dyn Stream<Item = Result<Content, Status>> + Send>>;
 
+#[tonic::async_trait]
 impl Metadata for MetadataService {
     type MaterializeStream = ResponseStream;
 

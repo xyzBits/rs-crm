@@ -2,7 +2,7 @@ use crate::{
     Content, MaterializeRequest, MetadataService, Publisher, ResponseStream, ServiceResult,
 };
 use chrono::{DateTime, Days, Utc};
-use fake::faker::chrono::raw::DateTimeBetween;
+use fake::faker::chrono::en::DateTimeBetween;
 use fake::faker::lorem::en::Sentence;
 use fake::faker::name::en::Name;
 use fake::{Fake, Faker};
