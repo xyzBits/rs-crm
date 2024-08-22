@@ -25,6 +25,7 @@ pub struct NotificationServiceInner {
 type ServiceResult<T> = Result<Response<T>, Status>;
 type ResponseStream = Pin<Box<dyn Stream<Item = Result<SendResponse, Status>> + Send>>;
 
+#[tonic::async_trait]
 impl Notification for NotificationService {
     type SendStream = ResponseStream;
 
