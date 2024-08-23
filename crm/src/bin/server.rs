@@ -2,6 +2,7 @@ use anyhow::Result;
 use crm::pb::user_service_server::{UserService, UserServiceServer};
 use crm::pb::{CreateUserRequest, GetUserRequest, User};
 use std::net::SocketAddr;
+use std::time::Duration;
 use tonic::transport::Server;
 use tonic::{async_trait, Request, Response, Status};
 
@@ -31,17 +32,40 @@ impl UserService for UserServer {
     }
 }
 
+// #[tokio::main]
+// async fn main() -> Result<()> {
+//     let addr: SocketAddr = "[::1]:50051".parse()?;
+//     let user_server = UserServer::default();
+//
+//     println!("UserService listening on {:?}", addr);
+//
+//     Server::builder()
+//         .add_service(UserServiceServer::new(user_server))
+//         .serve(addr)
+//         .await?;
+//
+//     Ok(())
+// }
+
 #[tokio::main]
 async fn main() -> Result<()> {
-    let addr: SocketAddr = "[::1]:50051".parse()?;
-    let user_server = UserServer::default();
 
-    println!("UserService listening on {:?}", addr);
+    tokio::spawn(async move {
+        let addr: SocketAddr = "[::1]:50051".parse().unwrap();
+        let user_server = UserServer::default();
 
-    Server::builder()
-        .add_service(UserServiceServer::new(user_server))
-        .serve(addr)
-        .await?;
+        println!("UserService listening on {:?}", addr);
+
+        Server::builder()
+            .add_service(UserServiceServer::new(user_server))
+            .serve(addr)
+            .await
+            .unwrap();
+    });
+
+    // 如果这里不 sleep 主程序就直接结束了
+    tokio::time::sleep(Duration::from_secs(100 * 1000)).await;
+
 
     Ok(())
 }

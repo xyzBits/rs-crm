@@ -5,7 +5,7 @@ use crate::{abi, NotificationService};
 use fake::faker::internet::en::SafeEmail;
 use fake::Fake;
 use tonic::Status;
-use tracing::warn;
+use tracing::{info, warn};
 use uuid::Uuid;
 
 impl abi::Sender for EmailMessage {
@@ -16,6 +16,8 @@ impl abi::Sender for EmailMessage {
             warn!("Failed to send email message");
             Status::internal("Failed to send email message")
         })?;
+
+        info!("send email message");
 
         Ok(SendResponse {
             message_id,
