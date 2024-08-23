@@ -20,6 +20,9 @@ tokio = { workspace = true }
 tonic = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
+uuid = { version = "1.10.0", features = ["v4"] }
+fake = { version = "2.9.2", features = ["derive", "chrono"] }
+
 
 [build-dependencies]
 anyhow = { workspace = true }
@@ -27,5 +30,4 @@ proto-builder-trait = "0.6.1"
 tonic-build = { workspace = true }
 
 [dev-dependencies]
-fake = { version = "2.9.2", features = ["derive", "chrono"] }
 nanoid = "0.4.0"

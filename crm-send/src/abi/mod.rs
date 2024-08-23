@@ -9,7 +9,7 @@ use crate::pb::{SendRequest, SendResponse};
 use crate::{NotificationService, NotificationServiceInner, ResponseStream, ServiceResult};
 use chrono::Utc;
 pub use email::*;
-use futures::Stream;
+use futures::{Stream, StreamExt};
 pub use in_app::*;
 use itertools::WhileSome;
 use prost_types::Timestamp;
@@ -19,8 +19,9 @@ use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::mpsc;
 use tokio::time::sleep;
-use tonic::Status;
-use tracing::info;
+use tonic::codegen::tokio_stream::wrappers::ReceiverStream;
+use tonic::{Response, Status};
+use tracing::{info, warn};
 
 const CHANNEL_SIZE: usize = 1024;
 
@@ -46,7 +47,27 @@ impl NotificationService {
         &self,
         mut stream: impl Stream<Item = Result<SendRequest, Status>> + Send + 'static + Unpin,
     ) -> ServiceResult<ResponseStream> {
-        todo!()
+        let (sender, receiver) = mpsc::channel(CHANNEL_SIZE);
+        let service = self.clone();
+
+        tokio::spawn(async move {
+            while let Some(Ok(req)) = stream.next().await {
+                let cloned_service = service.clone();
+                let res = match req.msg {
+                    Some(Msg::Email(email)) => email.send(cloned_service).await,
+                    Some(Msg::Sms(sms)) => sms.send(cloned_service).await,
+                    Some(Msg::InApp(in_app)) => in_app.send(cloned_service).await,
+                    None => {
+                        warn!("Invalid request");
+                        Err(Status::invalid_argument("Invalid request"))
+                    }
+                };
+                sender.send(res).await.unwrap();
+            }
+        });
+
+        let stream = ReceiverStream::new(receiver);
+        Ok(Response::new(Box::pin(stream)))
     }
 }
 

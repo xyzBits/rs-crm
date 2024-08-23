@@ -33,6 +33,7 @@ impl Notification for NotificationService {
         &self,
         request: Request<Streaming<SendRequest>>,
     ) -> Result<Response<Self::SendStream>, Status> {
-        todo!()
+        let stream = request.into_inner();
+        self.send(stream).await
     }
 }
