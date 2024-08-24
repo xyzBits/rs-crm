@@ -45,11 +45,7 @@ impl NotificationService {
 
     pub async fn send(
         &self,
-        mut stream:
-        impl Stream<Item=Result<SendRequest, Status>>
-        + Send
-        + 'static +
-        Unpin,
+        mut stream: impl Stream<Item = Result<SendRequest, Status>> + Send + 'static + Unpin,
     ) -> ServiceResult<ResponseStream> {
         let (sender, receiver) = mpsc::channel(CHANNEL_SIZE);
         let service = self.clone();
@@ -125,11 +121,7 @@ mod tests {
 
         let response = service.send(stream).await?;
 
-        let ret =
-            response
-                .into_inner()
-                .collect::<Vec<_>>()
-                .await;
+        let ret = response.into_inner().collect::<Vec<_>>().await;
 
         assert_eq!(ret.len(), 3);
         Ok(())

@@ -32,3 +32,9 @@ sqlx = { version = "0.7.4", features = [
 
 tracing = "0.1.40"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
+
+# 为什么要在这里添加
+# 这是一个本地依赖
+crm-metadata = { path = "crm-metadata" }
+crm-send = { path = "crm-send" }
+user-stat = { path = "user-stat" }

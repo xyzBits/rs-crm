@@ -49,7 +49,6 @@ impl UserService for UserServer {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-
     tokio::spawn(async move {
         let addr: SocketAddr = "[::1]:50051".parse().unwrap();
         let user_server = UserServer::default();
@@ -65,7 +64,6 @@ async fn main() -> Result<()> {
 
     // 如果这里不 sleep 主程序就直接结束了
     tokio::time::sleep(Duration::from_secs(100 * 1000)).await;
-
 
     Ok(())
 }
